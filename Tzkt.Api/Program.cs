@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
@@ -16,15 +15,17 @@ namespace Tzkt.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Init().Run();
+            Host.CreateDefaultBuilder(args).ConfigureApi().Build().Init().Run();
         }
+    }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+    public static class IHostBuilderExt
+    {
+        public static IHostBuilder ConfigureApi(this IHostBuilder host) => host
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 
     static class IHostExt
@@ -42,10 +43,6 @@ namespace Tzkt.Api
                 var migrations = db.Database.GetPendingMigrations();
                 if (migrations.Any())
                     throw new Exception($"{migrations.Count()} database migrations are pending");
-
-                var state = db.AppState.Single();
-                if (state.Level < 1)
-                    throw new Exception("database is empty, at least two blocks are needed");
 
                 logger.LogInformation("Database initialized");
                 return host;

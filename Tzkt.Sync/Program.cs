@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
@@ -17,35 +16,35 @@ namespace Tzkt.Sync
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Init().Run();
+            Host.CreateDefaultBuilder(args).ConfigureIndexer().Build().Init().Run();
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostContext, config) =>
-                {
-                    config.AddEnvironmentVariables("TZKT_");
-                })
-                .ConfigureHostConfiguration(configHost =>
-                {
-                    configHost.AddEnvironmentVariables(prefix: "TZKT_");
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddDbContext<TzktContext>(options =>
-                        options.UseNpgsql(hostContext.Configuration.GetConnectionString("DefaultConnection")));
-
-                    services.AddCaches();
-                    services.AddTezosNode();
-                    services.AddTezosProtocols();
-
-                    services.AddQuotes(hostContext.Configuration);
-
-                    services.AddHostedService<Observer>();
-                });
     }
 
-    static class IHostExt
+    public static class IHostBuilderExt
+    {
+        public static IHostBuilder ConfigureIndexer(this IHostBuilder host) => host
+            .ConfigureHostConfiguration(configHost =>
+            {
+                configHost.AddEnvironmentVariables("TZKT_");
+            })
+            .ConfigureAppConfiguration((hostContext, configApp) =>
+            {
+                configApp.AddEnvironmentVariables("TZKT_");
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.AddDbContext<TzktContext>(options =>
+                    options.UseNpgsql(hostContext.Configuration.GetConnectionString("DefaultConnection")));
+
+                services.AddCaches();
+                services.AddTezosNode();
+                services.AddTezosProtocols();
+                services.AddQuotes(hostContext.Configuration);
+                services.AddHostedService<Observer>();
+            });
+    }
+
+    public static class IHostExt
     {
         public static IHost Init(this IHost host, int attempt = 0)
         {

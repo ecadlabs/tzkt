@@ -151,7 +151,7 @@ namespace Tzkt.Api.Services.Sync
                 LIMIT    1";
 
             using var db = GetConnection();
-            return await db.QueryFirstAsync<int>(sql);
+            return await db.QueryFirstOrDefaultAsync<int>(sql);
         }
     }
 

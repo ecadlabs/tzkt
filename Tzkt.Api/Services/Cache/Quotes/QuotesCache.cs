@@ -51,12 +51,12 @@ namespace Tzkt.Api.Services.Cache
 
         public double Get(int symbol)
         {
-            return Quotes[symbol][^1];
+            return Quotes[symbol].Count == 0 ? 0 : Quotes[symbol][^1];
         }
 
         public double Get(int symbol, int level)
         {
-            return level >= Quotes[symbol].Count ? Quotes[symbol][^1] : Quotes[symbol][level];
+            return level >= Quotes[symbol].Count ? Get(symbol) : Quotes[symbol][level];
         }
 
         public QuoteShort Get(Symbols symbols, int level)
@@ -66,27 +66,7 @@ namespace Tzkt.Api.Services.Cache
 
             var quote = new QuoteShort();
 
-            if (level >= Quotes[0].Count)
-            {
-                if (symbols.HasFlag(Symbols.Btc))
-                    quote.Btc = Quotes[0][^1];
-
-                if (symbols.HasFlag(Symbols.Eur))
-                    quote.Eur = Quotes[1][^1];
-
-                if (symbols.HasFlag(Symbols.Usd))
-                    quote.Usd = Quotes[2][^1];
-
-                if (symbols.HasFlag(Symbols.Cny))
-                    quote.Cny = Quotes[3][^1];
-
-                if (symbols.HasFlag(Symbols.Jpy))
-                    quote.Jpy = Quotes[4][^1];
-
-                if (symbols.HasFlag(Symbols.Krw))
-                    quote.Krw = Quotes[5][^1];
-            }
-            else
+            if (level < Quotes[0].Count)
             {
                 if (symbols.HasFlag(Symbols.Btc))
                     quote.Btc = Quotes[0][level];
@@ -105,6 +85,26 @@ namespace Tzkt.Api.Services.Cache
 
                 if (symbols.HasFlag(Symbols.Krw))
                     quote.Krw = Quotes[5][level];
+            }
+            else if (Quotes[0].Count > 0)
+            {
+                if (symbols.HasFlag(Symbols.Btc))
+                    quote.Btc = Quotes[0][^1];
+
+                if (symbols.HasFlag(Symbols.Eur))
+                    quote.Eur = Quotes[1][^1];
+
+                if (symbols.HasFlag(Symbols.Usd))
+                    quote.Usd = Quotes[2][^1];
+
+                if (symbols.HasFlag(Symbols.Cny))
+                    quote.Cny = Quotes[3][^1];
+
+                if (symbols.HasFlag(Symbols.Jpy))
+                    quote.Jpy = Quotes[4][^1];
+
+                if (symbols.HasFlag(Symbols.Krw))
+                    quote.Krw = Quotes[5][^1];
             }
 
             return quote;

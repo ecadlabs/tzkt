@@ -40,7 +40,7 @@ namespace Tzkt.Api.Repositories
             return new Quote
             {
                 Level = state.Level,
-                Timestamp = Time[state.Level],
+                Timestamp = state.Timestamp,
                 Btc = Quotes.Get(0),
                 Eur = Quotes.Get(1),
                 Usd = Quotes.Get(2),

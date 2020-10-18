@@ -33,7 +33,7 @@ namespace Tzkt.Api.Services.Cache
 
         public async Task UpdateAsync(RawState state)
         {
-            if (state.Protocol != Current.Hash)
+            if (Protocols.Count == 0 || state.Protocol != Current.Hash)
             {
                 using var db = GetConnection();
                 Protocols = (await db.QueryAsync<Protocol>(@"SELECT * FROM ""Protocols"" ORDER BY ""Code""")).ToList();

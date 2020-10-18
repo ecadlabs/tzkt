@@ -69,6 +69,9 @@ namespace Tzkt.Api.Repositories
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
 
+            if (!rows.Any())
+                return Enumerable.Empty<Cycle>();
+
             var cycleSize = Protocols.Current.BlocksPerCycle;
             return rows.Select(row => new Cycle
             {
@@ -120,6 +123,9 @@ namespace Tzkt.Api.Repositories
 
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
+
+            if (!rows.Any())
+                return Array.Empty<object[]>();
 
             var result = new object[rows.Count()][];
             for (int i = 0; i < result.Length; i++)
@@ -208,6 +214,9 @@ namespace Tzkt.Api.Repositories
 
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
+
+            if (!rows.Any())
+                return Array.Empty<object>();
 
             //TODO: optimize memory allocation
             var result = new object[rows.Count()];

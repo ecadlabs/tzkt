@@ -72,6 +72,9 @@ namespace Tzkt.Api.Repositories
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
 
+            if (!rows.Any())
+                return Enumerable.Empty<BakingRight>();
+            
             var state = State.GetState();
             var proto = Protocols.Current;
 
@@ -132,6 +135,9 @@ namespace Tzkt.Api.Repositories
 
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
+
+            if (!rows.Any())
+                return Array.Empty<object[]>();
 
             var result = new object[rows.Count()][];
             for (int i = 0; i < result.Length; i++)
@@ -223,6 +229,9 @@ namespace Tzkt.Api.Repositories
             using var db = GetConnection();
             var rows = await db.QueryAsync(sql.Query, sql.Params);
 
+            if (!rows.Any())
+                return Array.Empty<object>();
+
             //TODO: optimize memory allocation
             var result = new object[rows.Count()];
             var j = 0;
@@ -270,10 +279,13 @@ namespace Tzkt.Api.Repositories
 
         public async Task<IEnumerable<BakingInterval>> GetSchedule(string address, DateTime from, DateTime to, int maxPriority)
         {
+            var rawAccount = await Accounts.GetAsync(address);
+            
+            if (!(rawAccount is RawDelegate))
+                return Enumerable.Empty<BakingInterval>();
+
             var state = State.GetState();
             var proto = Protocols.Current;
-
-            var rawAccount = await Accounts.GetAsync(address);
 
             var fromLevel = from > state.Timestamp
                 ? state.Level + (int)(from - state.Timestamp).TotalSeconds / proto.TimeBetweenBlocks
@@ -283,7 +295,7 @@ namespace Tzkt.Api.Repositories
                 ? state.Level + (int)(to - state.Timestamp).TotalSeconds / proto.TimeBetweenBlocks
                 : Time.FindLevel(to, SearchMode.ExactOrLower);
 
-            if (!(rawAccount is RawDelegate) || fromLevel == -1 || toLevel == -1)
+            if (fromLevel == -1 || toLevel == -1)
                 return Enumerable.Empty<BakingInterval>();
 
             var fromCycle = (fromLevel - 1) / proto.BlocksPerCycle;
