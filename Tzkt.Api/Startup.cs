@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Dapper;
-
+using Netezos.Rpc;
 using Tzkt.Api.Repositories;
 using Tzkt.Api.Services;
 using Tzkt.Api.Services.Auth;
@@ -34,6 +34,8 @@ namespace Tzkt.Api
             services.AddDbContext<TzktContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddSingleton<TezRpc>();
+            
             services.AddSingleton<AccountsCache>();
             services.AddSingleton<BigMapsCache>();
             services.AddSingleton<AliasesCache>();
@@ -42,7 +44,7 @@ namespace Tzkt.Api
             services.AddSingleton<SoftwareCache>();
             services.AddSingleton<StateCache>();
             services.AddSingleton<TimeCache>();
-
+            
             services.AddTransient<StateRepository>();
             services.AddTransient<AccountRepository>();
             services.AddTransient<OperationRepository>();
@@ -60,7 +62,7 @@ namespace Tzkt.Api
             services.AddTransient<SoftwareRepository>();
             services.AddTransient<BigMapsRepository>();
             services.AddTransient<MetadataRepository>();
-
+            
             services.AddAuthService(Configuration);
 
             services.AddHomeService();

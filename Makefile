@@ -45,17 +45,14 @@ sync-image:
 	docker build -t bakingbad/tzkt-sync:latest -f ./Tzkt.Sync/Dockerfile .
 	
 granada-init:
-	docker build -t tzkt-snapshot-granada -f Dockerfile-granada-snapshot .
-	docker run --name tzkt-granada-snapshot tzkt-snapshot-granada
-	docker cp tzkt-granada-snapshot:/granada_db.backup .
-	docker rm tzkt-granada-snapshot
 	docker-compose -f docker-compose.granada.yml up -d granada-db
 	docker-compose -f docker-compose.granada.yml exec -T granada-db psql -U tzkt postgres -c '\l'
 	docker-compose -f docker-compose.granada.yml exec -T granada-db dropdb -U tzkt --if-exists tzkt_db
 	docker-compose -f docker-compose.granada.yml exec -T granada-db createdb -U tzkt -T template0 tzkt_db
-	docker-compose -f docker-compose.granada.yml exec -T granada-db pg_restore -U tzkt -O -x -v -d tzkt_db -1 < granada_db.backup
-	rm granada_db.backup
-	docker rmi tzkt-snapshot-granada
+	docker-compose -f docker-compose.granada.yml exec -T granada-db apt update
+	docker-compose -f docker-compose.granada.yml exec -T granada-db apt install wget
+	docker-compose -f docker-compose.granada.yml exec -T granada-db wget "https://tzkt.s3.eu-central-1.amazonaws.com/snapshots/tzkt_v1.6_granadanet.backup" -O granada_db.backup
+	docker-compose -f docker-compose.granada.yml exec -T granada-db pg_restore -U tzkt -O -x -v -d tzkt_db -e -j 8 granada_db.backup
 	docker-compose pull	
 	
 granada-start:

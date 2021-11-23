@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Tzkt.Api.Services;
 using Tzkt.Data;
 
 namespace Tzkt.Api
@@ -48,6 +48,7 @@ namespace Tzkt.Api
             using var scope = host.Services.CreateScope();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             var db = scope.ServiceProvider.GetRequiredService<TzktContext>();
+            var tet = scope.ServiceProvider.GetRequiredService<TezRpc>();
 
             try
             {
