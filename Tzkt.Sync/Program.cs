@@ -63,6 +63,12 @@ namespace Tzkt.Sync
                         });
                     }
                     #endregion
+
+                    #region dipdup metadata
+                    var dipDupMetadata = hostContext.Configuration.GetDipDupMetadataConfig();
+                    if (dipDupMetadata.Enabled)
+                        services.AddHostedService<DipDupMetadata>();
+                    #endregion
                 });
     }
 
