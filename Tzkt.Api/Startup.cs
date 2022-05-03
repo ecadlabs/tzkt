@@ -175,7 +175,7 @@ namespace Tzkt.Api
                     new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
                     {
                         Public = true,
-                        MaxAge = TimeSpan.FromSeconds(10)
+                        MaxAge = TimeSpan.FromSeconds(30)
                     };
                 context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
                     new string[] { "Accept-Encoding" };

@@ -33,6 +33,7 @@ namespace Tzkt.Api.Controllers
         /// </remarks>
         /// <returns></returns>
         [HttpGet("count")]
+        [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]
         public Task<int> GetCount()
         {
             return Task.FromResult(State.Current.BlocksCount);
@@ -59,6 +60,7 @@ namespace Tzkt.Api.Controllers
         /// <param name="quote">Comma-separated list of ticker symbols to inject historical prices into response</param>
         /// <returns></returns>
         [HttpGet]
+        [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<ActionResult<IEnumerable<Block>>> Get(
             AccountParameter baker,
             [OpenApiExtensionData("x-tzkt-extension", "anyof-parameter")]
