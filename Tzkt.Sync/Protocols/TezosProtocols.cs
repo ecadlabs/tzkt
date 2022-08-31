@@ -47,6 +47,7 @@ namespace Tzkt.Sync
                     "Psithaca2MLRFYargivpo7YvUr7wUDqyxrdhC5CQq78mRvimz6A" => services.GetRequiredService<Proto12Handler>(),
                     "PtJakart2xVj7pYXJBXrqHgd82rdkLey5ZeeGwDgPp9rhQUbSqY" => services.GetRequiredService<Proto13Handler>(),
                     "PtKathmankSpLLDALzWw7CGD2j2MtyveTwboEYokqUCP4a1LxMg" => services.GetRequiredService<Proto14Handler>(),
+                    "ProtoALphaALphaALphaALphaALphaALphaALphaALphaDdp3zK" => services.GetRequiredService<Proto13Handler>(),
                     _ => throw new NotImplementedException($"Protocol '{protocol}' is not supported"),
                 };
             }

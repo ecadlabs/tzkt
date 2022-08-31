@@ -17,7 +17,9 @@ namespace Tzkt.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Check().Init().Run();
+            var host = CreateHostBuilder(args).Build();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            host.Check().Init().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
