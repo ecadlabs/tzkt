@@ -65,14 +65,14 @@ namespace Tzkt.Api
                 {
                     if (migrations[i] != appliedMigrations[i])
                     {
-                        attempt = 30;
+                        attempt = 120;
                         throw new Exception($"API and DB schema have incompatible versions. Drop the DB and restore it from the appropriate snapshot.");
                     }
                 }
 
                 if (appliedMigrations.Count > migrations.Count)
                 {
-                    attempt = 30;
+                    attempt = 120;
                     throw new Exception($"API version seems older than version of the DB schema. Update the API to the newer version.");
                 }
 
@@ -89,7 +89,7 @@ namespace Tzkt.Api
             catch (Exception ex)
             {
                 logger.LogCritical($"Failed to initialize database: {ex.Message}");
-                if (attempt >= 30) throw;
+                if (attempt >= 120) throw;
                 Thread.Sleep(1000);
 
                 return host.Init(++attempt);
