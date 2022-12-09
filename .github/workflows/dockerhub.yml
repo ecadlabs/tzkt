@@ -3,7 +3,7 @@ name: Dockerhub
 on:
   push:
     branches:
-      - 'master'
+      - 'taqueria'
 
 jobs:
   push_to_registry:
@@ -13,38 +13,45 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push TzKT Sync image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64v8
           file: Tzkt.Sync/Dockerfile
           push: true
-          tags: bakingbad/tzkt-sync:latest
+          tags: ecadlabs/tzkt-sync:latest
           
       - name: Build and push TzKT API image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64v8
           file: Tzkt.Api/Dockerfile
           push: true
-          tags: bakingbad/tzkt-api:latest
+          tags: ecadlabs/tzkt-api:latest
           
       - name: Docker Hub TzKT Sync Description Update
         uses: peter-evans/dockerhub-description@v2
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: bakingbad/tzkt-sync
+          repository: ecadlabs/tzkt-sync
           
       - name: Docker Hub TzKT API Description Update
         uses: peter-evans/dockerhub-description@v2
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: bakingbad/tzkt-api
+          repository: ecadlabs/tzkt-api
