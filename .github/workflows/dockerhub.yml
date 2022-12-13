@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/amd64,linux/arm64v8
+          platforms: linux/amd64,linux/arm64
           file: Tzkt.Sync/Dockerfile
           push: true
           tags: ecadlabs/tzkt-sync:latest
@@ -37,21 +37,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/amd64,linux/arm64v8
+          platforms: linux/amd64,linux/arm64
           file: Tzkt.Api/Dockerfile
           push: true
           tags: ecadlabs/tzkt-api:latest
-          
-      - name: Docker Hub TzKT Sync Description Update
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ecadlabs/tzkt-sync
-          
-      - name: Docker Hub TzKT API Description Update
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ecadlabs/tzkt-api
