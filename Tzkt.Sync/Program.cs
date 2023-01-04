@@ -19,7 +19,9 @@ namespace Tzkt.Sync
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Init().Run();
+            var host = CreateHostBuilder(args).Build();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            host.Init().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
