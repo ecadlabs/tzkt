@@ -58,7 +58,6 @@ namespace Tzkt.Sync.Protocols.Proto10
             protocol.TimeBetweenBlocks = parameters["minimal_block_delay"]?.Value<int>() ?? 30;
 
             protocol.LBSubsidy = parameters["liquidity_baking_subsidy"]?.Value<int>() ?? 2_500_000;
-            protocol.LBSunsetLevel = parameters["liquidity_baking_sunset_level"]?.Value<int>() ?? 2_032_928;
             protocol.LBToggleThreshold = (parameters["liquidity_baking_escape_ema_threshold"]?.Value<int>() ?? 1_000_000) * 1000;
         }
 
@@ -81,7 +80,6 @@ namespace Tzkt.Sync.Protocols.Proto10
             protocol.TimeBetweenBlocks /= 2;
 
             protocol.LBSubsidy = 2_500_000;
-            protocol.LBSunsetLevel = 2_032_928;
             protocol.LBToggleThreshold = 1_000_000_000;
         }
 
@@ -339,7 +337,7 @@ namespace Tzkt.Sync.Protocols.Proto10
             //    }
             //    catch (Exception ex)
             //    {
-            //        Logger.LogError("Failed to fetch endorsing rights for level {0}: {1}", level, ex.Message);
+            //        Logger.LogError(ex, "Failed to fetch endorsing rights for level {level}", level);
             //        if (++attempts >= 10) throw new Exception("Too many RPC errors when fetching endorsing rights");
             //        await Task.Delay(3000);
             //        level--;

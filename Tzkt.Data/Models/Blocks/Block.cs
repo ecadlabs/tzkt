@@ -84,6 +84,9 @@ namespace Tzkt.Data.Models
         public List<IncreasePaidStorageOperation> IncreasePaidStorageOps { get; set; }
         public List<VdfRevelationOperation> VdfRevelationOps { get; set; }
 
+        public List<UpdateConsensusKeyOperation> UpdateConsensusKeyOps { get; set; }
+        public List<DrainDelegateOperation> DrainDelegateOps { get; set; }
+
         public List<MigrationOperation> Migrations { get; set; }
         public List<RevelationPenaltyOperation> RevelationPenalties { get; set; }
         #endregion

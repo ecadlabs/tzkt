@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -64,6 +65,7 @@ namespace Tzkt.Api
             services.AddTransient<MetadataRepository>();
             services.AddTransient<ConstantsRepository>();
             services.AddTransient<ContractEventsRepository>();
+            services.AddTransient<DomainsRepository>();
 
             services.AddAuthService(Configuration);
 
@@ -73,12 +75,11 @@ namespace Tzkt.Api
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.MaxDepth = 100_000;
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
                     options.JsonSerializerOptions.Converters.Add(new AccountConverter());
-                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                     options.JsonSerializerOptions.Converters.Add(new OperationConverter());
                     options.JsonSerializerOptions.Converters.Add(new OperationErrorConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.JsonSerializerOptions.MaxDepth = 100_000;
                 })
                 .ConfigureApiBehaviorOptions(options =>
                 {
@@ -124,12 +125,11 @@ namespace Tzkt.Api
                 })
                 .AddJsonProtocol(jsonOptions =>
                 {
-                    jsonOptions.PayloadSerializerOptions.MaxDepth = 100_000;
-                    jsonOptions.PayloadSerializerOptions.IgnoreNullValues = true;
                     jsonOptions.PayloadSerializerOptions.Converters.Add(new AccountConverter());
-                    jsonOptions.PayloadSerializerOptions.Converters.Add(new DateTimeConverter());
                     jsonOptions.PayloadSerializerOptions.Converters.Add(new OperationConverter());
                     jsonOptions.PayloadSerializerOptions.Converters.Add(new OperationErrorConverter());
+                    jsonOptions.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    jsonOptions.PayloadSerializerOptions.MaxDepth = 100_000;
                 });
             }
             #endregion

@@ -3,7 +3,7 @@ name: Dockerhub
 on:
   push:
     branches:
-      - 'taqueria'
+      - 'taqueria-2'
 
 jobs:
   push_to_registry:

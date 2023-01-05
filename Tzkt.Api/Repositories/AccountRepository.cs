@@ -72,6 +72,8 @@ namespace Tzkt.Api.Repositories
                         TxRollupSubmitBatchCount = delegat.TxRollupSubmitBatchCount,
                         IncreasePaidStorageCount = delegat.IncreasePaidStorageCount,
                         VdfRevelationsCount = delegat.VdfRevelationsCount,
+                        UpdateConsensusKeyCount = delegat.UpdateConsensusKeyCount,
+                        DrainDelegateCount = delegat.DrainDelegateCount,
                         FrozenDeposit = delegat.FrozenDeposit,
                         FrozenDepositLimit = delegat.FrozenDepositLimit,
                         DelegatedBalance = delegat.DelegatedBalance,
@@ -136,6 +138,7 @@ namespace Tzkt.Api.Repositories
                         TxRollupReturnBondCount = user.TxRollupReturnBondCount,
                         TxRollupSubmitBatchCount = user.TxRollupSubmitBatchCount,
                         IncreasePaidStorageCount = user.IncreasePaidStorageCount,
+                        DrainDelegateCount = user.DrainDelegateCount,
                         Counter = user.Balance > 0 ? user.Counter : State.Current.ManagerCounter,
                         FirstActivity = user.FirstLevel,
                         FirstActivityTime = Time[user.FirstLevel],
@@ -292,6 +295,7 @@ namespace Tzkt.Api.Repositories
 
         public async Task<IEnumerable<Account>> Get(
             Int32Parameter id,
+            AddressParameter address,
             AccountTypeParameter type,
             ContractKindParameter kind,
             AccountParameter @delegate,
@@ -304,6 +308,7 @@ namespace Tzkt.Api.Repositories
         {
             var sql = new SqlBuilder($@"SELECT *, {AliasQuery} FROM ""Accounts""")
                 .Filter("Id", id)
+                .Filter("Address", address)
                 .Filter("Type", type)
                 .Filter("Kind", kind)
                 .Filter("DelegateId", @delegate)
@@ -352,6 +357,7 @@ namespace Tzkt.Api.Repositories
                             TxRollupReturnBondCount = row.TxRollupReturnBondCount,
                             TxRollupSubmitBatchCount = row.TxRollupSubmitBatchCount,
                             IncreasePaidStorageCount = row.IncreasePaidStorageCount,
+                            DrainDelegateCount = row.DrainDelegateCount,
                             Counter = row.Balance > 0 ? row.Counter : State.Current.ManagerCounter,
                             FirstActivity = row.FirstLevel,
                             FirstActivityTime = Time[row.FirstLevel],
@@ -406,6 +412,8 @@ namespace Tzkt.Api.Repositories
                             TxRollupSubmitBatchCount = row.TxRollupSubmitBatchCount,
                             IncreasePaidStorageCount = row.IncreasePaidStorageCount,
                             VdfRevelationsCount = row.VdfRevelationsCount,
+                            UpdateConsensusKeyCount = row.UpdateConsensusKeyCount,
+                            DrainDelegateCount = row.DrainDelegateCount,
                             FrozenDeposit = row.FrozenDeposit,
                             FrozenDepositLimit = row.FrozenDepositLimit,
                             DelegatedBalance = row.DelegatedBalance,
@@ -561,6 +569,7 @@ namespace Tzkt.Api.Repositories
 
         public async Task<object[][]> Get(
             Int32Parameter id,
+            AddressParameter address,
             AccountTypeParameter type,
             ContractKindParameter kind,
             AccountParameter @delegate,
@@ -636,6 +645,8 @@ namespace Tzkt.Api.Repositories
                     case "txRollupSubmitBatchCount": columns.Add(@"""TxRollupSubmitBatchCount"""); break;
                     case "vdfRevelationsCount": columns.Add(@"""VdfRevelationsCount"""); break;
                     case "increasePaidStorageCount": columns.Add(@"""IncreasePaidStorageCount"""); break;
+                    case "updateConsensusKeyCount": columns.Add(@"""UpdateConsensusKeyCount"""); break;
+                    case "drainDelegateCount": columns.Add(@"""DrainDelegateCount"""); break;
 
                     case "delegate": columns.Add(@"""DelegateId"""); break;
                     case "delegationLevel": columns.Add(@"""DelegationLevel"""); columns.Add(@"""DelegateId"""); break;
@@ -655,6 +666,7 @@ namespace Tzkt.Api.Repositories
 
             var sql = new SqlBuilder($@"SELECT {string.Join(',', columns)} FROM ""Accounts""")
                 .Filter("Id", id)
+                .Filter("Address", address)
                 .Filter("Type", type)
                 .Filter("Kind", kind)
                 .Filter("DelegateId", @delegate)
@@ -919,6 +931,14 @@ namespace Tzkt.Api.Repositories
                         foreach (var row in rows)
                             result[j++][i] = row.IncreasePaidStorageCount;
                         break;
+                    case "updateConsensusKeyCount":
+                        foreach (var row in rows)
+                            result[j++][i] = row.UpdateConsensusKeyCount;
+                        break;
+                    case "drainDelegateCount":
+                        foreach (var row in rows)
+                            result[j++][i] = row.DrainDelegateCount;
+                        break;
                     case "delegate":
                         foreach (var row in rows)
                         {
@@ -986,6 +1006,7 @@ namespace Tzkt.Api.Repositories
 
         public async Task<object[]> Get(
             Int32Parameter id,
+            AddressParameter address,
             AccountTypeParameter type,
             ContractKindParameter kind,
             AccountParameter @delegate,
@@ -1059,6 +1080,8 @@ namespace Tzkt.Api.Repositories
                 case "txRollupSubmitBatchCount": columns.Add(@"""TxRollupSubmitBatchCount"""); break;
                 case "vdfRevelationsCount": columns.Add(@"""VdfRevelationsCount"""); break;
                 case "increasePaidStorageCount": columns.Add(@"""IncreasePaidStorageCount"""); break;
+                case "updateConsensusKeyCount": columns.Add(@"""UpdateConsensusKeyCount"""); break;
+                case "drainDelegateCount": columns.Add(@"""DrainDelegateCount"""); break;
 
                 case "delegate": columns.Add(@"""DelegateId"""); break;
                 case "delegationLevel": columns.Add(@"""DelegationLevel"""); columns.Add(@"""DelegateId"""); break;
@@ -1077,6 +1100,7 @@ namespace Tzkt.Api.Repositories
 
             var sql = new SqlBuilder($@"SELECT {string.Join(',', columns)} FROM ""Accounts""")
                 .Filter("Id", id)
+                .Filter("Address", address)
                 .Filter("Type", type)
                 .Filter("Kind", kind)
                 .Filter("DelegateId", @delegate)
@@ -1337,6 +1361,14 @@ namespace Tzkt.Api.Repositories
                 case "increasePaidStorageCount":
                     foreach (var row in rows)
                         result[j++] = row.IncreasePaidStorageCount;
+                    break;
+                case "updateConsensusKeyCount":
+                    foreach (var row in rows)
+                        result[j++] = row.UpdateConsensusKeyCount;
+                    break;
+                case "drainDelegateCount":
+                    foreach (var row in rows)
+                        result[j++] = row.DrainDelegateCount;
                     break;
                 case "delegate":
                     foreach (var row in rows)
@@ -1626,6 +1658,14 @@ namespace Tzkt.Api.Repositories
                         ? Operations.GetIncreasePaidStorageOps(_delegat, null, level, timestamp, status, sort, offset, limit, quote)
                         : Task.FromResult(Enumerable.Empty<IncreasePaidStorageOperation>());
 
+                    var updateConsensusKeyOps = delegat.UpdateConsensusKeyCount > 0 && types.Contains(OpTypes.UpdateConsensusKey)
+                        ? Operations.GetUpdateConsensusKeys(_delegat, null, level, timestamp, status, sort, offset, limit, quote)
+                        : Task.FromResult(Enumerable.Empty<UpdateConsensusKeyOperation>());
+
+                    var drainDelegateOps = delegat.DrainDelegateCount > 0 && types.Contains(OpTypes.DrainDelegate)
+                        ? Operations.GetDrainDelegates(new AnyOfParameter { Fields = new[] { "delegate", "target" }, Eq = delegat.Id }, null, null, level, timestamp, sort, offset, limit, quote)
+                        : Task.FromResult(Enumerable.Empty<DrainDelegateOperation>());
+
                     var migrations = delegat.MigrationsCount > 0 && types.Contains(OpTypes.Migration)
                         ? Operations.GetMigrations(_delegat, null, null, null, level, timestamp, sort, offset, limit, format, quote)
                         : Task.FromResult(Enumerable.Empty<MigrationOperation>());
@@ -1669,6 +1709,8 @@ namespace Tzkt.Api.Repositories
                         txRollupReturnBondOps,
                         txRollupSubmitBatchOps,
                         increasePaidStorageOps,
+                        updateConsensusKeyOps,
+                        drainDelegateOps,
                         migrations,
                         revelationPenalties,
                         bakingOps,
@@ -1700,6 +1742,8 @@ namespace Tzkt.Api.Repositories
                     result.AddRange(txRollupReturnBondOps.Result);
                     result.AddRange(txRollupSubmitBatchOps.Result);
                     result.AddRange(increasePaidStorageOps.Result);
+                    result.AddRange(updateConsensusKeyOps.Result);
+                    result.AddRange(drainDelegateOps.Result);
                     result.AddRange(migrations.Result);
                     result.AddRange(revelationPenalties.Result);
                     result.AddRange(bakingOps.Result);
@@ -1777,6 +1821,10 @@ namespace Tzkt.Api.Repositories
                         ? Operations.GetIncreasePaidStorageOps(_user, null, level, timestamp, status, sort, offset, limit, quote)
                         : Task.FromResult(Enumerable.Empty<IncreasePaidStorageOperation>());
 
+                    var userDrainDelegateOps = user.DrainDelegateCount > 0 && types.Contains(OpTypes.DrainDelegate)
+                        ? Operations.GetDrainDelegates(new AnyOfParameter { Fields = new[] { "delegate", "target" }, Eq = user.Id }, null, null, level, timestamp, sort, offset, limit, quote)
+                        : Task.FromResult(Enumerable.Empty<DrainDelegateOperation>());
+
                     var userMigrations = user.MigrationsCount > 0 && types.Contains(OpTypes.Migration)
                         ? Operations.GetMigrations(_user, null, null, null, level, timestamp, sort, offset, limit, format, quote)
                         : Task.FromResult(Enumerable.Empty<MigrationOperation>());
@@ -1799,6 +1847,7 @@ namespace Tzkt.Api.Repositories
                         userTxRollupReturnBondOps,
                         userTxRollupSubmitBatchOps,
                         userIncreasePaidStorageOps,
+                        userDrainDelegateOps,
                         userMigrations);
 
                     result.AddRange(userActivations.Result);
@@ -1818,6 +1867,7 @@ namespace Tzkt.Api.Repositories
                     result.AddRange(userTxRollupReturnBondOps.Result);
                     result.AddRange(userTxRollupSubmitBatchOps.Result);
                     result.AddRange(userIncreasePaidStorageOps.Result);
+                    result.AddRange(userDrainDelegateOps.Result);
                     result.AddRange(userMigrations.Result);
 
                     break;

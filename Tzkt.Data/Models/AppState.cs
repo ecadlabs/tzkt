@@ -72,6 +72,8 @@ namespace Tzkt.Data.Models
         public int TransferTicketOpsCount { get; set; }
 
         public int IncreasePaidStorageOpsCount { get; set; }
+        public int UpdateConsensusKeyOpsCount { get; set; }
+        public int DrainDelegateOpsCount { get; set; }
 
         public int MigrationOpsCount { get; set; }
         public int RevelationPenaltyOpsCount { get; set; }
@@ -87,7 +89,7 @@ namespace Tzkt.Data.Models
         public int EventsCount { get; set; }
         #endregion
 
-        #region quotes
+        #region plugins
         public int QuoteLevel { get; set; }
         public double QuoteBtc { get; set; }
         public double QuoteEur { get; set; }
@@ -97,7 +99,10 @@ namespace Tzkt.Data.Models
         public double QuoteKrw { get; set; }
         public double QuoteEth { get; set; }
         public double QuoteGbp { get; set; }
-        #endregion
+
+        public string DomainsNameRegistry { get; set; }
+        public int DomainsLevel { get; set; }
+        #endregion 
     }
 
     public static class AppStateModel
@@ -123,7 +128,7 @@ namespace Tzkt.Data.Models
                     Id = -1,
                     Cycle = -1,
                     Level = -1,
-                    Timestamp = DateTime.MinValue,
+                    Timestamp = DateTimeOffset.MinValue.UtcDateTime,
                     Protocol = "",
                     NextProtocol = "",
                     Hash = "",

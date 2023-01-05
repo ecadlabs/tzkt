@@ -54,6 +54,8 @@ namespace Tzkt.Data
         public DbSet<TransferTicketOperation> TransferTicketOps { get; set; }
 
         public DbSet<IncreasePaidStorageOperation> IncreasePaidStorageOps { get; set; }
+        public DbSet<UpdateConsensusKeyOperation> UpdateConsensusKeyOps { get; set; }
+        public DbSet<DrainDelegateOperation> DrainDelegateOps { get; set; }
 
         public DbSet<EndorsingRewardOperation> EndorsingRewardOps { get; set; }
         public DbSet<MigrationOperation> MigrationOps { get; set; }
@@ -77,10 +79,6 @@ namespace Tzkt.Data
         public DbSet<FreezerUpdate> FreezerUpdates { get; set; }
         #endregion
 
-        #region quotes
-        public DbSet<Quote> Quotes { get; set; }
-        #endregion
-
         #region statistics
         public DbSet<Statistics> Statistics { get; set; }
         #endregion
@@ -100,6 +98,11 @@ namespace Tzkt.Data
         public DbSet<Token> Tokens { get; set; }
         public DbSet<TokenBalance> TokenBalances { get; set; }
         public DbSet<TokenTransfer> TokenTransfers { get; set; }
+        #endregion
+
+        #region plugins
+        public DbSet<Quote> Quotes { get; set; }
+        public DbSet<Domain> Domains { get; set; }
         #endregion
 
         public TzktContext(DbContextOptions options) : base(options) { }
@@ -154,6 +157,8 @@ namespace Tzkt.Data
             modelBuilder.BuildTransferTicketOperationModel();
 
             modelBuilder.BuildIncreasePaidStorageOperationModel();
+            modelBuilder.BuildUpdateConsensusKeyOperationModel();
+            modelBuilder.BuildDrainDelegateOperationModel();
 
             modelBuilder.BuildEndorsingRewardOperationModel();
             modelBuilder.BuildMigrationOperationModel();
@@ -177,10 +182,6 @@ namespace Tzkt.Data
             modelBuilder.BuildFreezerUpdateModel();
             #endregion
 
-            #region quotes
-            modelBuilder.BuildQuoteModel();
-            #endregion
-
             #region statistics
             modelBuilder.BuildStatisticsModel();
             #endregion
@@ -200,6 +201,11 @@ namespace Tzkt.Data
             modelBuilder.BuildTokenModel();
             modelBuilder.BuildTokenBalanceModel();
             modelBuilder.BuildTokenTransferModel();
+            #endregion
+
+            #region plugins
+            modelBuilder.BuildQuoteModel();
+            modelBuilder.BuildDomainModel();
             #endregion
         }
     }

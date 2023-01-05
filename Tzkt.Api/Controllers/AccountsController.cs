@@ -39,6 +39,7 @@ namespace Tzkt.Api.Controllers
         /// Returns a list of accounts.
         /// </remarks>
         /// <param name="id">Filters by internal id.</param>
+        /// <param name="address">Filters by address.</param>
         /// <param name="type">Filters accounts by type (`user`, `delegate`, `contract`, `ghost`).</param>
         /// <param name="kind">Filters accounts by contract kind (`delegator_contract` or `smart_contract`)</param>
         /// <param name="delegate">Filters accounts by delegate. Allowed fields for `.eqx` mode: none.</param>
@@ -53,6 +54,7 @@ namespace Tzkt.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> Get(
             Int32Parameter id,
+            AddressParameter address,
             AccountTypeParameter type,
             ContractKindParameter kind,
             AccountParameter @delegate,
@@ -87,7 +89,7 @@ namespace Tzkt.Api.Controllers
             #endregion
             
             var query = ResponseCacheService.BuildKey(Request.Path.Value,
-                ("id", id),  ("type", type), ("kind", kind), ("delegate", @delegate), ("balance", balance), ("staked", staked),
+                ("id", id), ("address", address),  ("type", type), ("kind", kind), ("delegate", @delegate), ("balance", balance), ("staked", staked),
                 ("lastActivity", lastActivity), ("select", select), ("sort", sort), ("offset", offset), ("limit", limit));
 
             if (ResponseCache.TryGet(query, out var cached))
@@ -96,25 +98,25 @@ namespace Tzkt.Api.Controllers
             object res;
             if (select == null)
             {
-                res = await Accounts.Get(id, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit);
+                res = await Accounts.Get(id, address, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit);
             }
             else if (select.Values != null)
             {
                 if (select.Values.Length == 1)
-                    res = await Accounts.Get(id, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Values[0]);
+                    res = await Accounts.Get(id, address, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Values[0]);
                 else
-                    res = await Accounts.Get(id, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Values);
+                    res = await Accounts.Get(id, address, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Values);
             }
             else
             {
                 if (select.Fields.Length == 1)
-                    res = await Accounts.Get(id, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Fields[0]);
+                    res = await Accounts.Get(id, address, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Fields[0]);
                 else
                 {
                     res = new SelectionResponse
                     {
                         Cols = select.Fields,
-                        Rows = await Accounts.Get(id, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Fields)
+                        Rows = await Accounts.Get(id, address, type, kind, @delegate, balance, staked, lastActivity, sort, offset, limit, select.Fields)
                     };
                 }
             }
@@ -276,9 +278,9 @@ namespace Tzkt.Api.Controllers
         /// <param name="address">Account address (starting with tz or KT)</param>
         /// <param name="type">Comma separated list of operation types to return (`endorsement`, `preendorsement`, `ballot`, `proposal`, `activation`, `double_baking`,
         /// `double_endorsing`, `double_preendorsing`, `nonce_revelation`, `vdf_revelation`, `delegation`, `origination`, `transaction`, `reveal`, `register_constant`,
-        /// `set_deposits_limit`, `increase_paid_storage`, 'tx_rollup_origination', 'tx_rollup_submit_batch', 'tx_rollup_commit', 'tx_rollup_return_bond',
-        /// 'tx_rollup_finalize_commitment', 'tx_rollup_remove_commitment', 'tx_rollup_rejection', 'tx_rollup_dispatch_tickets', 'transfer_ticket', `migration`,
-        /// `revelation_penalty`, `baking`, `endorsing_reward`). If not specified then the default set will be returned.</param>
+        /// `set_deposits_limit`, `increase_paid_storage`, `tx_rollup_origination`, `tx_rollup_submit_batch`, `tx_rollup_commit`, `tx_rollup_return_bond`,
+        /// `tx_rollup_finalize_commitment`, `tx_rollup_remove_commitment`, `tx_rollup_rejection`, `tx_rollup_dispatch_tickets`, `transfer_ticket`, `migration`,
+        /// `update_consensus_key`, `drain_delegate`, `revelation_penalty`, `baking`, `endorsing_reward`). If not specified then the default set will be returned.</param>
         /// <param name="initiator">Filters transactions, delegations and originations by initiator. Allowed fields for `.eqx` mode: none.</param>
         /// <param name="sender">Filters transactions, delegations, originations, reveals and seed nonce revelations by sender. Allowed fields for `.eqx` mode: none.</param>
         /// <param name="target">Filters transactions by target. Allowed fields for `.eqx` mode: none.</param>
@@ -566,7 +568,7 @@ namespace Tzkt.Api.Controllers
             if (ResponseCache.TryGet(query, out var cached))
                 return this.Bytes(cached);
 
-            var res = await History.Get(address, datetime.DateTime);
+            var res = await History.Get(address, datetime.UtcDateTime);
             cached = ResponseCache.Set(query, res);
             return this.Bytes(cached);
         }
@@ -704,8 +706,8 @@ namespace Tzkt.Api.Controllers
             };
             #endregion
 
-            var _from = from?.DateTime ?? DateTime.MinValue;
-            var _to = to?.DateTime ?? DateTime.MaxValue;
+            var _from = (from ?? DateTimeOffset.MinValue).UtcDateTime;
+            var _to = (to ?? DateTimeOffset.MaxValue).UtcDateTime;
 
             var stream = new MemoryStream();
             var csv = new StreamWriter(stream);
